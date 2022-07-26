@@ -1,4 +1,5 @@
 # Install GRPC:
+Install Grpc according to https://grpc.io/docs/languages/cpp/quickstart/
 
 - Install Prerequisites
 
@@ -13,37 +14,34 @@ sudo apt-get install cmake
 
 - set install directory for grpc
 ```
-INSTALL_DIR=$HOME
+export MY_INSTALL_DIR=$HOME/.local
+mkdir -p $MY_INSTALL_DIR
+```
+Add the local bin folder to your path variable, for example:
+```
+export PATH="$MY_INSTALL_DIR/bin:$PATH"
 ```
 
 - clone grpc repository
 
 ```
-cd $INSTALL_DIR
-git clone --recurse-submodules -b v1.45.0 --depth 1 --shallow-submodules https://github.com/grpc/grpc
+ git clone --recurse-submodules -b v1.46.3 --depth 1 --shallow-submodules https://github.com/grpc/grpc
 ```
 
-- install protobuf
+- install protobuf && grpc
 
 ```
-cd $INSTALL_DIR/grpc/third_party/protobuf
-./autogen.sh
- ./configure
-make
-make check
-sudo make install
-sudo ldconfig # refresh shared library cache.
-```
-
-- install grpc
-
-```
-cd $INSTALL_DIR/grpc/third_party/protobuf
+cd grpc
 mkdir -p cmake/build
-cd cmake/build
-cmake ../..
-make
-sudo make install
+pushd cmake/build
+cmake -DgRPC_INSTALL=ON \
+      -DgRPC_BUILD_TESTS=OFF \
+      -DCMAKE_INSTALL_PREFIX=$MY_INSTALL_DIR \
+      ../..
+make -j
+make install
+popd
+
 ```
 
 - test if you can compile an example
